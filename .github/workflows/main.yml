@@ -24,7 +24,7 @@ jobs:
 
       - name: Check token length
         run: |
-          echo "Token length: ${#SONAR_TOKEN}"
+          echo "Token length: ${{secrets.SONAR_TOKEN}}"
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
