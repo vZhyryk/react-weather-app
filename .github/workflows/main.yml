@@ -62,7 +62,7 @@ jobs:
 
           DEPLOYMENT=$(aws amplify create-deployment \
             --app-id ${{ secrets.AMPLIFY_APP_ID }} \
-            --branch-name main)
+            --branch-name staging)
 
           UPLOAD_URL=$(echo $DEPLOYMENT | jq -r '.zipUploadUrl')
           JOB_ID=$(echo $DEPLOYMENT | jq -r '.jobId')
@@ -71,5 +71,5 @@ jobs:
 
           aws amplify start-deployment \
             --app-id ${{ secrets.AMPLIFY_APP_ID }} \
-            --branch-name main \
+            --branch-name staging \
             --job-id $JOB_ID
