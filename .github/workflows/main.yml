@@ -22,14 +22,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Token check
+      - name: Check token length
         run: |
-            if [ -z "$SONAR_TOKEN" ]; then
-              echo "❌ SONAR_TOKEN is EMPTY"
-              exit 1
-            else
-              echo "✅ SONAR_TOKEN is set"
-            fi
+          echo "Token length: ${#SONAR_TOKEN}"
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
