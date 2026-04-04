@@ -2,7 +2,7 @@ name: Build and deploy to GitHub Pages
 
 permissions:
   contents: write
-  
+
 on:
   push:
     branches: [main]
@@ -11,15 +11,24 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Install and Build 🔧
-        run: |
-          npm ci
-          npm run build
+      - name: Install and Build
+        run: npm ci
 
-      - name: Deploy 🚀
+      - name: Run tests
+        run: npm test -- --watchAll=false
+
+      - name: Build
+        run: npm run build
+
+      - name: SonarQube Scan
+        run: npx sonar-scanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           branch: gh-pages
