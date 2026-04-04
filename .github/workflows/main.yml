@@ -46,3 +46,10 @@ jobs:
       - name: Sync to S3 bucket
         run: |
           aws s3 sync build/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+
+      - name: Start Amplify job
+        run: |
+          aws amplify start-job \
+            --app-id ${{ secrets.AMPLIFY_APP_ID }} \
+            --branch-name main \
+            --job-type RELEASE
