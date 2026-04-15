@@ -1,4 +1,4 @@
-name: Build and deploy to GitHub Pages
+name: Build and deploy to GitHub Pages && AWS && GCP
 
 permissions:
   contents: write
@@ -10,6 +10,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -29,13 +30,19 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Deploy
+      # =========================
+      # GitHub Pages deploy
+      # =========================
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
           branch: gh-pages
           folder: build
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # =========================
+      # AWS CONFIG
+      # =========================
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
@@ -46,13 +53,6 @@ jobs:
       - name: Sync to S3 bucket
         run: |
           aws s3 sync build/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
-
-      # - name: Start Amplify job
-      #   run: |
-      #     aws amplify start-job \
-      #       --app-id ${{ secrets.AMPLIFY_APP_ID }} \
-      #       --branch-name staging \
-      #       --job-type RELEASE
 
       - name: Deploy to AWS Amplify
         run: |
@@ -73,3 +73,20 @@ jobs:
             --app-id ${{ secrets.AMPLIFY_APP_ID }} \
             --branch-name staging \
             --job-id $JOB_ID
+
+      # =========================
+      # GCP CONFIG
+      # =========================
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup GCP SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Sync to GCS bucket
+        run: |
+          gsutil -m rsync -r -d build gs://${{ secrets.GCS_BUCKET_NAME }}
