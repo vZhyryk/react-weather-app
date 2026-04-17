@@ -44,7 +44,6 @@ export const App = () => {
         setQuery={setSearchQuery}
         searchQuery={searchQuery}
       />
-    some test
       <MainContainer>
         {requestStatus === 'Idle' && <Idle />}
         {requestStatus === 'Pending' && <Pending />}
